@@ -72,7 +72,7 @@ class UseCaseValidationTest {
     @Test
     fun `LoginUseCase fails on empty username`() = runBlocking {
         val useCase = LoginUseCase(fakeAuthRepository)
-        val result = useCase("", "password123")
+        val result = useCase("", "Password123@")
         assertTrue(result is Resource.Error)
         assertEquals("El usuario es obligatorio.", (result as Resource.Error).message)
     }
@@ -86,27 +86,54 @@ class UseCaseValidationTest {
     }
 
     @Test
-    fun `RegisterUseCase validates username length and password length`() = runBlocking {
+    fun `LoginUseCase fails on invalid password without uppercase or symbol`() = runBlocking {
+        val useCase = LoginUseCase(fakeAuthRepository)
+        
+        // No uppercase
+        val r1 = useCase("jorge", "password123@")
+        assertTrue(r1 is Resource.Error)
+
+        // No symbol
+        val r2 = useCase("jorge", "Password123")
+        assertTrue(r2 is Resource.Error)
+
+        // Valid
+        val r3 = useCase("jorge", "Password123@")
+        assertTrue(r3 is Resource.Success)
+    }
+
+    @Test
+    fun `RegisterUseCase validates username length and password rules`() = runBlocking {
         val useCase = RegisterUseCase(fakeAuthRepository)
 
         // Too short username
-        val r1 = useCase("ab", "password123", "password123")
+        val r1 = useCase("ab", "Password123@", "Password123@")
         assertTrue(r1 is Resource.Error)
         assertEquals("El nombre de usuario debe tener entre 3 y 50 caracteres.", (r1 as Resource.Error).message)
 
         // Too short password
-        val r2 = useCase("jorge", "short", "short")
+        val r2 = useCase("jorge", "Sh@1", "Sh@1")
         assertTrue(r2 is Resource.Error)
-        assertEquals("La contraseña debe tener al menos 8 caracteres.", (r2 as Resource.Error).message)
+        assertTrue((r2 as Resource.Error).message.contains("8 caracteres"))
+
+        // Password missing uppercase
+        val r3 = useCase("jorge", "password123@", "password123@")
+        assertTrue(r3 is Resource.Error)
+        assertTrue((r3 as Resource.Error).message.contains("mayúscula"))
+
+        // Password missing symbol
+        val r4 = useCase("jorge", "Password1234", "Password1234")
+        assertTrue(r4 is Resource.Error)
+        assertTrue((r4 as Resource.Error).message.contains("símbolo"))
 
         // Mismatched passwords
-        val r3 = useCase("jorge", "password123", "different123")
-        assertTrue(r3 is Resource.Error)
-        assertEquals("Las contraseñas no coinciden.", (r3 as Resource.Error).message)
+        val r5 = useCase("jorge", "Password123@", "Different123@")
+        assertTrue(r5 is Resource.Error)
+        assertEquals("Las contraseñas no coinciden.", (r5 as Resource.Error).message)
 
         // Valid
-        val r4 = useCase("jorge", "password123", "password123")
-        assertTrue(r4 is Resource.Success)
+        val r6 = useCase("jorge", "Password123@", "Password123@")
+        assertTrue(r6 is Resource.Success)
     }
 
     @Test

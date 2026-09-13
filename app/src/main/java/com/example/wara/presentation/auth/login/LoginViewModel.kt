@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.wara.core.result.Resource
+import com.example.wara.core.validation.PasswordValidator
 import com.example.wara.data.local.datastore.SessionDataStore
 import com.example.wara.domain.usecase.auth.LoginUseCase
 import kotlinx.coroutines.channels.Channel
@@ -70,6 +71,9 @@ class LoginViewModel(
         }
         if (state.password.isBlank()) {
             _uiState.update { it.copy(passwordError = "La contraseña es obligatoria.") }
+            hasError = true
+        } else if (!PasswordValidator.isValid(state.password)) {
+            _uiState.update { it.copy(passwordError = PasswordValidator.ERROR_MESSAGE) }
             hasError = true
         }
 

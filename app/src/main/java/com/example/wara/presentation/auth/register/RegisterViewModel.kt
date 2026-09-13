@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.wara.core.result.Resource
+import com.example.wara.core.validation.PasswordValidator
 import com.example.wara.domain.usecase.auth.RegisterUseCase
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -48,8 +49,8 @@ class RegisterViewModel(
             _uiState.update { it.copy(usuarioError = "El nombre de usuario debe tener entre 3 y 50 caracteres.") }
             hasError = true
         }
-        if (state.password.length < 8) {
-            _uiState.update { it.copy(passwordError = "La contraseña debe tener al menos 8 caracteres.") }
+        if (!PasswordValidator.isValid(state.password)) {
+            _uiState.update { it.copy(passwordError = PasswordValidator.ERROR_MESSAGE) }
             hasError = true
         }
         if (state.password != state.confirmPassword) {
