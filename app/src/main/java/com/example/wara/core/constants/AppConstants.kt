@@ -3,7 +3,7 @@ package com.example.wara.core.constants
 import android.os.Build
 
 object AppConstants {
-    const val PRODUCTION_BASE_URL = "https://backendwara.onrender.com/"
+    const val PRODUCTION_BASE_URL = "https://backendwara-kvnz.onrender.com/"
     const val DEFAULT_BASE_URL = PRODUCTION_BASE_URL
 
     const val DATABASE_NAME = "wara_local.db"

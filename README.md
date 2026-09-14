@@ -23,8 +23,8 @@ La solución se encuentra integrada y conectada en producción a la API REST de 
 ## 🌐 Conectividad Backend en Producción
 
 El aplicativo apunta por defecto al servicio cloud en alta disponibilidad:
-* **API Base URL:** `https://backendwara.onrender.com/`
-* **Health Check:** `https://backendwara.onrender.com/api/health`
+* **API Base URL:** `https://backendwara-kvnz.onrender.com/`
+* **Health Check:** `https://backendwara-kvnz.onrender.com/api/health`
 * **Seguridad:** Comunicación cifrada vía HTTPS con tokens **JWT Bearer**.
 
 ---
@@ -32,21 +32,21 @@ El aplicativo apunta por defecto al servicio cloud en alta disponibilidad:
 ## 📱 Funcionalidades Implementadas
 
 1. **Autenticación y Registro:**
-   * Registro de nuevos operadores con validación regex de correo corporativo y contraseña.
-   * Inicio de sesión con persistencia automática de sesión en DataStore.
-   * Cierre de sesión seguro con purga de tokens.
+   * Registro e inicio de sesión de operadores con validación estricta de contraseña (mínimo 8 caracteres, al menos 1 mayúscula y 1 símbolo especial).
+   * Persistencia automática y reactiva de sesión con Jetpack DataStore Preferences.
+   * Cierre de sesión seguro con purga integral de credenciales y tokens.
 2. **Dashboard de Trabajadores:**
-   * Listado en tarjetas modernas con datos clave (Nombres, DNI, Cargo, Área, Salario).
-   * Barra de búsqueda reactiva en tiempo real por Nombres, Apellidos, Documento o Cargo.
+   * Listado en tarjetas modernas con datos clave (Nombres, Apellidos, DNI, Edad).
+   * Barra de búsqueda reactiva en tiempo real con filtrado por DNI (según requerimiento de evaluación).
 3. **Gestión de Personal (CRUD Completo):**
-   * Alta de nuevos colaboradores con selector de fecha nativo (*DatePicker*) y validación de DNI a 8 dígitos.
-   * Edición y actualización reactiva de datos laborales.
-   * Baja lógica (*Soft Delete*) con diálogo modal de confirmación preventiva.
+   * Alta de nuevos colaboradores con exactamente 4 campos esenciales: **Nombre**, **Apellido**, **DNI** (8 dígitos numéricos) y **Edad** (18 a 80 años).
+   * Edición y actualización reactiva de datos del trabajador.
+   * Baja lógica (*Soft Delete* `Activo = false`) con confirmación preventiva.
 4. **Resiliencia y Experiencia de Usuario (UX):**
    * Notificaciones inmediatas mediante *Snackbars*.
    * Actualización instantánea del catálogo tras guardar o editar sin necesidad de recarga manual.
    * Soporte a márgenes del sistema (*Edge-to-Edge* y `navigationBarsPadding`).
-   * Tolerancia ampliada de 60 segundos ante *Cold-Starts* de la nube.
+   * Tolerancia ampliada de 60 segundos ante *Cold-Starts* de la nube y selector dinámico de servidores.
 
 ---
 
@@ -82,21 +82,24 @@ git clone https://github.com/JorgeRuiz20/AppWara.git
 ## 📁 Estructura del Proyecto
 
 ```
-app/src/main/java/com/wara/app/
+app/src/main/java/com/example/wara/
+├── core/               # Constantes, Resultado (Resource) y Validadores
 ├── data/
-│   ├── local/          # DataStore Preferences (SessionManager)
-│   ├── model/          # DTOs de Request y Response para Retrofit
-│   ├── remote/         # ApiService (Endpoints REST) y NetworkModule
-│   └── repository/     # Implementación concreta de Repositorios
+│   ├── local/          # Room DB (offline cache) y DataStore (sesión JWT)
+│   ├── remote/         # Retrofit ApiService, DTOs e Interceptors
+│   └── repository/     # Implementación de repositorios Auth y Trabajador
+├── di/                 # Manual DI Container (AppContainer)
 ├── domain/
-│   ├── model/          # Entidades puras del negocio (Worker, User)
-│   └── repository/     # Interfaces de repositorio (Inversión de dependencias)
+│   ├── model/          # Modelos de negocio (Usuario, Trabajador, AuthToken)
+│   ├── repository/     # Contratos e interfaces de repositorio
+│   └── usecase/        # Casos de uso de autenticación y gestión de trabajadores
 ├── presentation/
-│   ├── auth/           # LoginScreen, RegisterScreen y AuthViewModel
-│   ├── navigation/     # NavHost, AppScreens y rutas
-│   ├── theme/          # Color, Type, Shape y Theme Material 3
-│   └── workers/        # WorkerListScreen, WorkerFormScreen y ViewModels
-└── MainActivity.kt     # Punto de entrada de la aplicación
+│   ├── auth/           # LoginScreen, RegisterScreen y ViewModels
+│   ├── components/     # Diálogos de servidor, confirmación, error y barras
+│   ├── navigation/     # NavGraph y rutas Compose
+│   └── trabajador/     # Listado, formulario crear/editar y ViewModels
+├── ui/theme/           # Color, Tipografía, Formas y Tema Material 3
+└── MainActivity.kt     # Activity principal Edge-to-Edge
 ```
 
 ---

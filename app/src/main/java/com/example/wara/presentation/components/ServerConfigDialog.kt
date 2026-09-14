@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.wara.core.constants.AppConstants
 import com.example.wara.ui.theme.WaraPrimary
 
 @Composable
@@ -56,6 +57,12 @@ fun ServerConfigDialog(
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
+
+                PresetItem(
+                    title = "Cloud Render Producción",
+                    url = AppConstants.PRODUCTION_BASE_URL,
+                    onClick = { inputUrl = AppConstants.PRODUCTION_BASE_URL }
+                )
 
                 PresetItem(
                     title = "Dispositivo Físico USB (127.0.0.1:5050)",

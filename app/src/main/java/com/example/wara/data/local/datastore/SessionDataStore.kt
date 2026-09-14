@@ -21,7 +21,7 @@ class SessionDataStore(private val context: Context) {
 
     val baseUrlFlow: Flow<String> = context.dataStore.data.map { preferences ->
         val saved = preferences[KEY_BASE_URL]
-        if (saved.isNullOrBlank() || saved.contains("10.") || saved.contains("192.168.") || saved.contains("127.0.0.1") || saved.contains("localhost")) {
+        if (saved.isNullOrBlank() || saved.contains("10.") || saved.contains("192.168.") || saved.contains("127.0.0.1") || saved.contains("localhost") || saved.contains("backendwara.onrender.com")) {
             AppConstants.DEFAULT_BASE_URL
         } else {
             saved
